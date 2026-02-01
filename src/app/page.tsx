@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShieldCheck, Truck, Sparkles } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
+import { Product } from "@/types";
 
 interface Hero {
   id: string;
@@ -16,17 +17,6 @@ interface Hero {
   badge_text: string;
   image_url: string | null;
   active: boolean;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
-  image: string;
-  category: string;
-  stock: number;
 }
 
 async function getHero(): Promise<Hero | null> {

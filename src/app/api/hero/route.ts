@@ -17,7 +17,7 @@ export async function GET() {
         cta_text: 'Shop the Collection',
         cta_link: '/products',
         badge_text: 'Clean, modern skincare',
-        image_url: null,
+        image_url: '',
         active: true,
       });
       await heroRepository.save(defaultHero);
