@@ -7,6 +7,9 @@ import { ShieldCheck, Truck, Sparkles } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { Product } from "@/types";
 
+// Mark this route as dynamic since it fetches fresh data on each request
+export const dynamic = 'force-dynamic';
+
 interface Hero {
   id: string;
   title: string;
