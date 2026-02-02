@@ -6,9 +6,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ShieldCheck, Truck, Sparkles } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { Product } from "@/types";
+import { getDataSource } from "@/lib/data-source";
+import { Hero as HeroEntity } from "@/lib/entities/Hero";
+import { ProductEntity } from "@/lib/entities/Product";
 
 // Mark this route as dynamic since it fetches fresh data on each request
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface Hero {
   id: string;
@@ -24,16 +28,27 @@ interface Hero {
 
 async function getHero(): Promise<Hero | null> {
   try {
-    const response = await fetch('/api/hero', {
-      cache: 'no-store'
-    });
-    if (!response.ok) {
-      console.error('Hero fetch failed with status:', response.status);
-      return null;
+    const dataSource = await getDataSource();
+    const heroRepository = dataSource.getRepository(HeroEntity);
+    const heroes = await heroRepository.find({ order: { createdAt: 'DESC' } });
+    
+    if (heroes.length === 0) {
+      const defaultHero = heroRepository.create({
+        title: 'KlossySkin — Radiance in every routine.',
+        subtitle: 'Get up to 50% off on all skincare products',
+        description: 'Thoughtfully curated skincare essentials made to elevate your daily ritual.',
+        cta_text: 'Shop the Collection',
+        cta_link: '/products',
+        badge_text: 'Clean, modern skincare',
+        image_url: null,
+        active: true,
+      });
+      await heroRepository.save(defaultHero);
+      return defaultHero as Hero;
     }
-    const heroes = await response.json();
-    const activeHero = Array.isArray(heroes) ? heroes.find((h: Hero) => h.active) : null;
-    return activeHero || null;
+    
+    const activeHero = heroes.find((h: HeroEntity) => h.active);
+    return activeHero ? (activeHero as Hero) : null;
   } catch (error) {
     console.error('Failed to fetch hero:', error);
     return null;
@@ -42,15 +57,21 @@ async function getHero(): Promise<Hero | null> {
 
 async function getFeaturedProducts(): Promise<Product[]> {
   try {
-    const response = await fetch('/api/products?limit=4', {
-      cache: 'no-store'
-    });
-    if (!response.ok) {
-      console.error('Products fetch failed with status:', response.status);
-      return [];
-    }
-    const products = await response.json();
-    return Array.isArray(products) ? products.slice(0, 4) : [];
+    const dataSource = await getDataSource();
+    const repo = dataSource.getRepository(ProductEntity);
+    const products = await repo.find({ order: { createdAt: "DESC" }, take: 4 });
+    
+    return products.map((entity: ProductEntity) => ({
+      id: entity.id,
+      name: entity.name,
+      description: entity.description,
+      price: Number(entity.price),
+      currency: (entity.currency as Product["currency"]) ?? "USD",
+      image: entity.image,
+      category: entity.category,
+      stock: entity.stock,
+      createdAt: entity.createdAt,
+    }));
   } catch (error) {
     console.error('Failed to fetch products:', error);
     return [];
@@ -60,6 +81,10 @@ async function getFeaturedProducts(): Promise<Product[]> {
 export default async function Home() {
   const hero = await getHero();
   const featuredProducts = await getFeaturedProducts();
+  
+  // Debug logging
+  console.log('Home page render - Hero:', hero);
+  console.log('Home page render - Products count:', featuredProducts.length);
   
   // Use default values if fields are null
   const displayHero = hero ? {
