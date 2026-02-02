@@ -24,10 +24,17 @@ interface Hero {
 
 async function getHero(): Promise<Hero | null> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/hero`, {
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/hero`;
+    console.log('Fetching hero from:', apiUrl);
+    const response = await fetch(apiUrl, {
       cache: 'no-store'
     });
+    if (!response.ok) {
+      console.error('Hero fetch failed with status:', response.status);
+      return null;
+    }
     const heroes = await response.json();
+    console.log('Heroes fetched:', heroes);
     const activeHero = Array.isArray(heroes) ? heroes.find((h: Hero) => h.active) : null;
     return activeHero || null;
   } catch (error) {
@@ -38,10 +45,17 @@ async function getHero(): Promise<Hero | null> {
 
 async function getFeaturedProducts(): Promise<Product[]> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products?limit=4`, {
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products?limit=4`;
+    console.log('Fetching products from:', apiUrl);
+    const response = await fetch(apiUrl, {
       cache: 'no-store'
     });
+    if (!response.ok) {
+      console.error('Products fetch failed with status:', response.status);
+      return [];
+    }
     const products = await response.json();
+    console.log('Products fetched:', products);
     return Array.isArray(products) ? products.slice(0, 4) : [];
   } catch (error) {
     console.error('Failed to fetch products:', error);
