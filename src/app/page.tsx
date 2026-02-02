@@ -40,9 +40,8 @@ async function getHero(): Promise<Hero | null> {
         cta_text: 'Shop the Collection',
         cta_link: '/products',
         badge_text: 'Clean, modern skincare',
-        image_url: null,
         active: true,
-      });
+      } as Partial<HeroEntity>);
       await heroRepository.save(defaultHero);
       return defaultHero as Hero;
     }
