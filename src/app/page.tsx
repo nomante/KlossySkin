@@ -24,9 +24,7 @@ interface Hero {
 
 async function getHero(): Promise<Hero | null> {
   try {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/hero`;
-    console.log('Fetching hero from:', apiUrl);
-    const response = await fetch(apiUrl, {
+    const response = await fetch('/api/hero', {
       cache: 'no-store'
     });
     if (!response.ok) {
@@ -34,7 +32,6 @@ async function getHero(): Promise<Hero | null> {
       return null;
     }
     const heroes = await response.json();
-    console.log('Heroes fetched:', heroes);
     const activeHero = Array.isArray(heroes) ? heroes.find((h: Hero) => h.active) : null;
     return activeHero || null;
   } catch (error) {
@@ -45,9 +42,7 @@ async function getHero(): Promise<Hero | null> {
 
 async function getFeaturedProducts(): Promise<Product[]> {
   try {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products?limit=4`;
-    console.log('Fetching products from:', apiUrl);
-    const response = await fetch(apiUrl, {
+    const response = await fetch('/api/products?limit=4', {
       cache: 'no-store'
     });
     if (!response.ok) {
@@ -55,7 +50,6 @@ async function getFeaturedProducts(): Promise<Product[]> {
       return [];
     }
     const products = await response.json();
-    console.log('Products fetched:', products);
     return Array.isArray(products) ? products.slice(0, 4) : [];
   } catch (error) {
     console.error('Failed to fetch products:', error);

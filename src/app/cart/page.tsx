@@ -35,7 +35,7 @@ export default function CartPage() {
         await Promise.all(
           uniqueIds.map(async (id) => {
             try {
-              const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products/${id}`);
+              const response = await fetch(`/api/products/${id}`);
               if (response.ok) {
                 const product = await response.json();
                 fetchedData[id] = product;
