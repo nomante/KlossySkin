@@ -58,7 +58,7 @@ function LoginForm() {
       // Give the session a moment to update, then redirect to admin
       setTimeout(() => {
         router.push("/admin");
-      }, 500);
+      }, 2000);
     }
   };
 
