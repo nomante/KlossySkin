@@ -63,14 +63,16 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) { // Added account and profile for more debug info
       // Add user role to token on initial sign in
       if (user) {
         token.role = (user as CustomUser).role || "user";
         token.email = user.email;
         token.name = user.name;
         token.id = (user as CustomUser).id;
+        console.log("JWT callback - User object:", user); // Added log
         console.log("JWT callback - Token updated with role:", token.role);
+        console.log("JWT callback - Full token after update:", token); // Added log
       }
       return token as CustomJWT;
     },
@@ -79,7 +81,9 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as CustomUser).role = (token as CustomJWT).role || "user";
         (session.user as CustomUser).id = token.sub || "";
+        console.log("Session callback - Token object:", token); // Added log
         console.log("Session callback - User role in session:", (session.user as CustomUser).role);
+        console.log("Session callback - Full session after update:", session); // Added log
       }
       return session as CustomSession;
     },
